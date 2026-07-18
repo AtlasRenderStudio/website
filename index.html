@@ -483,6 +483,83 @@
   }
 
   /* ============================================
+     EMBEDDED FRAME SEQUENCE
+     A compact, right-aligned frame that plays through its 72
+     frames as it scrolls naturally past the viewport — nothing
+     is pinned, and there's no dedicated "extra" scroll distance.
+  ============================================ */
+  .frame-sequence{
+    position: relative;
+    padding: 150px 0 90px;
+    background: var(--bg);
+  }
+  .frame-sequence-inner{
+    display: flex;
+    justify-content: flex-end;
+  }
+  .frame-sequence-frame{
+    position: relative;
+    width: min(38vw, 420px);
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow-card);
+    background: var(--card);
+  }
+  .frame-sequence-canvas{
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .frame-sequence-loader{
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: var(--card);
+    transition: opacity 0.6s var(--ease-soft), visibility 0.6s;
+  }
+  .frame-sequence-loader.hidden{
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .frame-sequence-loader-bar{
+    width: 120px;
+    height: 2px;
+    background: var(--card-border);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .frame-sequence-loader-fill{
+    height: 100%;
+    width: 0%;
+    background: var(--blue);
+    transition: width 0.25s var(--ease-soft);
+  }
+  .frame-sequence-loader-text{
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 980px){
+    .frame-sequence-frame{ width: min(50vw, 380px); }
+  }
+
+  @media (max-width: 760px){
+    .frame-sequence{ padding: 120px 0 60px; }
+    .frame-sequence-inner{ justify-content: center; }
+    .frame-sequence-frame{ width: min(72vw, 340px); }
+  }
+
+  /* ============================================
      WORK SECTION
   ============================================ */
   .work-header{
@@ -1142,6 +1219,29 @@
   </div>
 </header>
 
+<!-- ============================================
+     EMBEDDED FRAME SEQUENCE (SCROLL-DRIVEN, NOT PINNED)
+     72 frames, right-aligned, compact — plays forward/backward as
+     it scrolls naturally through the viewport. Nothing is locked;
+     you scroll past it like any other section.
+     Frames live in /scrollanim/0001.png ... /scrollanim/0072.png
+     (update FRAME_COUNT / FRAME_PATH below if this ever changes).
+============================================ -->
+<section class="frame-sequence" id="sequence" aria-label="Product visualization animation">
+  <div class="container frame-sequence-inner">
+    <div class="frame-sequence-frame" id="frameSequenceFrame">
+      <canvas class="frame-sequence-canvas" id="frameCanvas" aria-hidden="true"></canvas>
+
+      <div class="frame-sequence-loader" id="frameLoader">
+        <div class="frame-sequence-loader-bar">
+          <div class="frame-sequence-loader-fill" id="frameLoaderFill"></div>
+        </div>
+        <span class="frame-sequence-loader-text" id="frameLoaderText">Loading — 0%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <main>
 
   <!-- ============================================
@@ -1450,6 +1550,9 @@
   <img id="lightboxImg" src="" alt="">
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
 <script>
 (function(){
   "use strict";
@@ -1672,6 +1775,147 @@
       window.scrollTo({ top: top, behavior: 'smooth' });
     });
   });
+
+  /* ============================================
+     EMBEDDED FRAME SEQUENCE
+     Scroll position drives which of the 72 frames is drawn to a
+     small canvas. Nothing is pinned — the frame sits in normal
+     page flow and simply plays through as it scrolls by.
+  ============================================ */
+  (function initFrameSequence(){
+    var section = document.getElementById('sequence');
+    var frameBox = document.getElementById('frameSequenceFrame');
+    var canvas = document.getElementById('frameCanvas');
+    if(!section || !frameBox || !canvas) return;
+
+    var ctx = canvas.getContext('2d');
+    var loader = document.getElementById('frameLoader');
+    var loaderFill = document.getElementById('frameLoaderFill');
+    var loaderText = document.getElementById('frameLoaderText');
+
+    /* ---------------------------------------------------------------
+       CONFIG — update these two lines to match your actual files.
+       Expected default: scrollanim/0001.png ... scrollanim/0072.png
+       (4-digit, zero-padded).
+    --------------------------------------------------------------- */
+    var FRAME_COUNT = 72;
+    var FRAME_PATH = function(i){
+      return 'scrollanim/' + String(i).padStart(4, '0') + '.png';
+    };
+    /* --------------------------------------------------------------- */
+
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var frames = [];
+    var currentFrame = 0;
+    var loadedCount = 0;
+    var ready = false;
+
+    function setLoaderProgress(pct){
+      if(loaderFill) loaderFill.style.width = pct + '%';
+      if(loaderText) loaderText.textContent = 'Loading — ' + pct + '%';
+    }
+
+    function hideLoader(){
+      if(loader) loader.classList.add('hidden');
+    }
+
+    function fitCanvas(){
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var rect = frameBox.getBoundingClientRect();
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function drawFrame(index){
+      index = Math.max(0, Math.min(FRAME_COUNT - 1, index));
+      var img = frames[index];
+      if(!img || !img.complete || !img.naturalWidth) return;
+      currentFrame = index;
+
+      var cw = frameBox.clientWidth;
+      var ch = frameBox.clientHeight;
+      var iw = img.naturalWidth;
+      var ih = img.naturalHeight;
+      var scale = Math.max(cw / iw, ch / ih); // cover-fit, no letterboxing
+      var dw = iw * scale;
+      var dh = ih * scale;
+      var dx = (cw - dw) / 2;
+      var dy = (ch - dh) / 2;
+
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.drawImage(img, dx, dy, dw, dh);
+    }
+
+    function preloadFrames(){
+      for(var i = 1; i <= FRAME_COUNT; i++){
+        (function(idx){
+          var img = new Image();
+          img.onload = img.onerror = function(){
+            loadedCount++;
+            setLoaderProgress(Math.round((loadedCount / FRAME_COUNT) * 100));
+            if(idx === 1){ drawFrame(0); }
+            if(loadedCount === FRAME_COUNT){ onFramesReady(); }
+          };
+          img.src = FRAME_PATH(idx);
+          frames[idx - 1] = img;
+        })(i);
+      }
+    }
+
+    function onFramesReady(){
+      ready = true;
+      fitCanvas();
+      drawFrame(currentFrame);
+      hideLoader();
+      if(window.ScrollTrigger){ ScrollTrigger.refresh(); }
+    }
+
+    function initScrollTrigger(){
+      if(!window.gsap || !window.ScrollTrigger) return;
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Non-pinned: progress runs from the moment the section enters
+      // the bottom of the viewport to the moment it leaves the top.
+      // The page keeps scrolling normally the whole time.
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 0.3,
+        onUpdate: function(self){
+          if(!ready) return;
+          var frameIndex = Math.round(self.progress * (FRAME_COUNT - 1));
+          drawFrame(frameIndex);
+        }
+      });
+    }
+
+    function handleResize(){
+      fitCanvas();
+      drawFrame(currentFrame);
+    }
+    window.addEventListener('resize', handleResize);
+
+    if(reducedMotion){
+      // Respect reduced-motion: show a single static frame, no scroll effect.
+      var stillImg = new Image();
+      stillImg.onload = function(){
+        frames[FRAME_COUNT - 1] = stillImg;
+        fitCanvas();
+        drawFrame(FRAME_COUNT - 1);
+        hideLoader();
+      };
+      stillImg.src = FRAME_PATH(FRAME_COUNT);
+      return;
+    }
+
+    fitCanvas();
+    preloadFrames();
+    initScrollTrigger();
+  })();
 
 })();
 </script>

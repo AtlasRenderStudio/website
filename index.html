@@ -1202,6 +1202,81 @@
   }
 
   /* ============================================
+     FAQ SECTION
+  ============================================ */
+  .faq-list{
+    max-width: 780px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .faq-item{
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .faq-item.open{
+    border-color: var(--blue);
+  }
+  .faq-question{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 24px 28px;
+    text-align: left;
+    font-family: var(--body);
+    font-size: 16.5px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .faq-icon{
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--blue-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform 0.4s var(--ease), background 0.3s;
+  }
+  .faq-icon::before,
+  .faq-icon::after{
+    content:'';
+    position:absolute;
+    background: var(--blue);
+    border-radius: 2px;
+  }
+  .faq-icon::before{ width: 12px; height: 2px; }
+  .faq-icon::after{ width: 2px; height: 12px; transition: transform 0.35s var(--ease); }
+  .faq-item.open .faq-icon{ transform: rotate(180deg); background: var(--blue); }
+  .faq-item.open .faq-icon::before,
+  .faq-item.open .faq-icon::after{ background: #fff; }
+  .faq-item.open .faq-icon::after{ transform: scaleY(0); }
+  .faq-answer{
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s var(--ease);
+  }
+  .faq-answer-inner{
+    overflow: hidden;
+  }
+  .faq-answer-inner p{
+    padding: 0 28px 26px;
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+  .faq-item.open .faq-answer{
+    grid-template-rows: 1fr;
+  }
+
+  /* ============================================
      FOOTER CONTACT AREA
   ============================================ */
   .footer-contact{
@@ -1289,6 +1364,8 @@
     .why-grid{ grid-template-columns: 1fr; }
     .footer-contact{ grid-template-columns: 1fr 1fr; gap: 14px; }
     .footer-contact-value{ font-size: 12px; }
+    .faq-question{ padding: 20px 22px; font-size: 15.5px; }
+    .faq-answer-inner p{ padding: 0 22px 22px; }
   }
 
   @media (max-width: 480px){
@@ -1309,6 +1386,7 @@
       <li><a href="#results">Results</a></li>
       <li><a href="#why">Why Me</a></li>
       <li><a href="#about">About</a></li>
+      <li><a href="#faq">FAQ</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div style="display:flex;align-items:center;gap:12px;">
@@ -1330,6 +1408,7 @@
   <a href="#results">Results</a>
   <a href="#why">Why Me</a>
   <a href="#about">About</a>
+  <a href="#faq">FAQ</a>
   <a href="#contact">Contact</a>
   <a href="#contact" class="btn btn-primary">Start A Project</a>
 </div>
@@ -1611,6 +1690,68 @@
   </section>
 
   <!-- ============================================
+       FAQ
+  ============================================ -->
+  <section id="faq">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Frequently Asked Questions</span>
+        <h2>Everything you need to know about working together.</h2>
+      </div>
+
+      <div class="faq-list reveal-stagger">
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>How much does a Product Animation cost?</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Depending on your wants and needs it can range anywhere from $100 to $10,000. I recommend sending an email with your request and I'll give you a quote within 24 hours.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>How long will it take to receive my final product?</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>It depends on the length of the product. It can be anywhere from 24 hours to 14 days depending on the size of the project.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>Do I get revisions?</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>You get one revision for free. 3D is very intensive. All revisions after that will charge an hourly rate.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>How can I get started?</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Either send an email or WhatsApp message and receive an answer within 24 hours.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
        CTA
   ============================================ -->
   <section id="contact">
@@ -1681,6 +1822,7 @@
         <li><a href="#results">Results</a></li>
         <li><a href="#why">Why Me</a></li>
         <li><a href="#about">About</a></li>
+        <li><a href="#faq">FAQ</a></li>
       </ul>
     </div>
     <div class="footer-bottom">
@@ -1912,6 +2054,22 @@
   }
 
   document.querySelectorAll('[data-compare]').forEach(initCompareSlider);
+
+  /* ---------- FAQ ACCORDION ---------- */
+  document.querySelectorAll('.faq-item').forEach(function(item){
+    var question = item.querySelector('.faq-question');
+    question.addEventListener('click', function(){
+      var isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(openItem){
+        if(openItem !== item){
+          openItem.classList.remove('open');
+          openItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        }
+      });
+      item.classList.toggle('open', !isOpen);
+      question.setAttribute('aria-expanded', String(!isOpen));
+    });
+  });
 
   /* ---------- SMOOTH ANCHOR SCROLL (account for fixed nav) ---------- */
   document.querySelectorAll('a[href^="#"]').forEach(function(a){

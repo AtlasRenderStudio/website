@@ -537,6 +537,32 @@ h1, h2, h3 {
   overflow: hidden;
 }
 
+.work-media--pending {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.work-media--pending .work-video {
+  position: absolute;
+  inset: 0;
+}
+
+.pending-label {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: rgba(6, 6, 8, 0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
 .placeholder-gradient {
   position: absolute;
   inset: 0;

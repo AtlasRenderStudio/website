@@ -102,11 +102,11 @@
 
     <div class="work-grid">
 
-      <!-- Real sample 1: replace assets/video-1.mp4 with your file -->
+      <!-- Real sample 1: Sonara (tech / headphones) -->
       <article class="work-card reveal" data-category="tech">
         <div class="work-media">
-          <video class="work-video" muted loop playsinline preload="metadata">
-            <source src="assets/video-1.mp4" type="video/mp4">
+          <video class="work-video" muted loop playsinline preload="metadata" poster="assets/sonara_tech-poster.jpg">
+            <source src="assets/sonara_tech.mp4" type="video/mp4">
           </video>
           <div class="play-hint" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
@@ -116,17 +116,23 @@
           </div>
         </div>
         <div class="work-info">
-          <h3>Project Title One</h3>
-          <p>Replace with a one-line description — product, goal, or brand.</p>
+          <h3>Sonara — 360° Spatial Audio</h3>
+          <p>AI-generated product motion for a wireless headphone launch.</p>
         </div>
       </article>
 
-      <!-- Real sample 2: replace assets/video-2.mp4 with your file -->
+      <!-- Real sample 2: Slake (beverage) — waiting on the video file.
+           Once you have it: drop it in as assets/slake_beverage.mp4, then
+           delete the <div class="placeholder-gradient ...">, the
+           <span class="pending-label">, and the "work-media--pending" class
+           below so the video shows normally (matches the Sonara card above). -->
       <article class="work-card reveal" data-category="beverage">
-        <div class="work-media">
+        <div class="work-media work-media--pending">
+          <div class="placeholder-gradient placeholder-gradient--alt"></div>
           <video class="work-video" muted loop playsinline preload="metadata">
-            <source src="assets/video-2.mp4" type="video/mp4">
+            <source src="assets/slake_beverage.mp4" type="video/mp4">
           </video>
+          <span class="pending-label">Video pending</span>
           <div class="play-hint" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
           </div>
@@ -135,8 +141,8 @@
           </div>
         </div>
         <div class="work-info">
-          <h3>Project Title Two</h3>
-          <p>Replace with a one-line description — product, goal, or brand.</p>
+          <h3>Slake</h3>
+          <p>AI-generated motion piece for the Slake beverage brand — description coming soon.</p>
         </div>
       </article>
 

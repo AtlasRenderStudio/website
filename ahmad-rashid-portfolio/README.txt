@@ -5,27 +5,44 @@ WHAT'S HERE
 -----------
 index.html   The whole page (structure + content)
 styles.css   All styling (dark, AI/motion aesthetic, animations)
-script.js    Scroll reveal animations, mobile menu, video hover-play, cursor glow
+script.js    Scroll reveal animations, mobile menu, video hover-play,
+             click-to-fullscreen lightbox, cursor glow
 
 No build step, no dependencies — just static files. Upload all three to your
 existing site's root (or a subfolder) and it works as-is.
 
-ADDING YOUR TWO VIDEOS
------------------------
-1. Create a folder named "assets" next to index.html.
-2. Put your video files in it, e.g.:
-     assets/video-1.mp4   (currently tagged "Tech" in the Work section)
-     assets/video-2.mp4   (currently tagged "Beverage")
-3. If you want different filenames, open index.html and search for
-   "assets/video-1.mp4" and "assets/video-2.mp4" — update the <source src="...">
-   paths to match.
-4. Videos autoplay muted+looped when a visitor hovers a card (or taps, on
-   mobile). Keep file sizes reasonable (a few MB, ideally under ~10MB each,
-   H.264 .mp4) so they load fast.
-5. Two extra "Next project" placeholder tiles are included in the Work grid
-   so the section doesn't look sparse — swap them for real project cards
-   later by copying the pattern of the first two <article class="work-card">
-   blocks.
+YOUR VIDEOS
+-----------
+- assets/sonara_tech.mp4 is already in place and wired up as the
+  first Work card ("Sonara — 360° Spatial Audio", tagged Tech), with a
+  poster frame at assets/sonara_tech-poster.jpg so it looks good
+  before anyone hovers it.
+- slake_beverage.mp4 didn't come through in the upload, so the second
+  card ("Slake", tagged Beverage) is set up to expect a file at
+  assets/slake_beverage.mp4 but currently shows a "Video pending" gradient
+  placeholder instead. Once you send that file:
+    1. Drop it in as assets/slake_beverage.mp4 (or edit the <source src="...">
+       path in index.html to match your filename).
+    2. In index.html, find the comment "Real sample 2: Slake" and remove the
+       <div class="placeholder-gradient ...">, the
+       <span class="pending-label">Video pending</span>, and the
+       " work-media--pending" class on the surrounding <div class="work-media">
+       — that reveals the real video exactly like the Sonara card.
+    3. Optional: generate a poster image the same way (see below) and add a
+       poster="..." attribute to the <video> tag.
+- On desktop, hovering a card autoplays a small muted preview inline.
+  Clicking a card (on any device — desktop, tablet, or mobile) opens it
+  fullscreen in a lightbox with normal video controls, so visitors can
+  watch it larger and unmute it. Keep file sizes reasonable (a few MB,
+  ideally under ~10MB, H.264 .mp4) so they load fast — Sonara's file is
+  ~17MB/15s, which is fine but worth compressing further if you want a
+  snappier hover/load response.
+- To make a poster frame for a video yourself (needs ffmpeg installed):
+    ffmpeg -ss 2 -i your-video.mp4 -frames:v 1 -update 1 -q:v 3 poster.jpg
+- Two extra "Next project" placeholder tiles are included in the Work grid
+  so the section doesn't look sparse — swap them for real project cards
+  later by copying the pattern of the Sonara/Slake <article class="work-card">
+  blocks.
 
 THINGS YOU'LL PROBABLY WANT TO EDIT
 ------------------------------------
@@ -37,6 +54,20 @@ THINGS YOU'LL PROBABLY WANT TO EDIT
 - Client / case-study names: none are included since you didn't share any
   yet — feel free to add a "Clients" strip or mention brands by name once
   you're ready (I'm happy to add this back in for you).
+
+RESPONSIVE / AUTO-SCALING
+--------------------------
+The whole site is fluid, not fixed-width:
+- Headlines and section titles scale smoothly with the browser width
+  (CSS clamp()), rather than jumping between fixed sizes.
+- The Work grid, Services grid, and About layout reflow from multi-column
+  to a single column on narrow screens (see the @media rules near the
+  bottom of styles.css).
+- The fullscreen video lightbox scales the video to fit any screen size
+  or orientation while always preserving its aspect ratio (never cropped,
+  never distorted, never overflowing the screen).
+Tested from a 320px-wide phone up to a 1920px ultra-wide monitor, portrait
+and landscape.
 
 CUSTOMIZING THE LOOK
 ---------------------

@@ -71,35 +71,86 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("mouseleave", () => glow.classList.remove("active"));
   }
 
-  /* ---- work videos: play on hover/tap ---- */
-  document.querySelectorAll(".work-card .work-video").forEach((video) => {
-    const card = video.closest(".work-card");
+  /* ---- work videos: hover preview (desktop) ---- */
+  const isFinePointer = window.matchMedia("(pointer: fine)").matches;
 
-    const play = () => {
-      video.play().catch(() => {});
-      card.classList.add("is-playing");
-    };
-    const pause = () => {
-      video.pause();
-      video.currentTime = 0;
-      card.classList.remove("is-playing");
-    };
+  document.querySelectorAll(".work-media").forEach((media) => {
+    const video = media.querySelector(".work-video");
+    if (!video) return; // "Next project" placeholder tiles have no video
 
-    // Desktop: hover
-    card.addEventListener("mouseenter", play);
-    card.addEventListener("mouseleave", pause);
+    const card = media.closest(".work-card");
 
-    // Touch: tap to toggle
-    card.addEventListener(
-      "touchstart",
-      () => {
-        if (video.paused) {
-          play();
-        } else {
-          pause();
-        }
-      },
-      { passive: true }
-    );
+    // Skip cards whose video isn't actually available yet (e.g. Slake,
+    // shown as a "Video pending" placeholder until the real file is added).
+    if (media.classList.contains("work-media--pending")) return;
+
+    if (isFinePointer) {
+      const play = () => {
+        video.play().catch(() => {});
+        card.classList.add("is-playing");
+      };
+      const pause = () => {
+        video.pause();
+        video.currentTime = 0;
+        card.classList.remove("is-playing");
+      };
+      card.addEventListener("mouseenter", play);
+      card.addEventListener("mouseleave", pause);
+    }
+  });
+
+  /* ---- click a Work video to open it fullscreen ---- */
+  const lightbox = document.getElementById("videoLightbox");
+  const lightboxVideo = document.getElementById("lightboxVideo");
+  const lightboxSource = lightboxVideo ? lightboxVideo.querySelector("source") : null;
+  const lightboxClose = document.getElementById("lightboxClose");
+  let lastFocused = null;
+
+  const openLightbox = (src, poster) => {
+    if (!lightbox || !lightboxVideo || !lightboxSource || !src) return;
+    lastFocused = document.activeElement;
+    lightboxSource.setAttribute("src", src);
+    if (poster) lightboxVideo.setAttribute("poster", poster);
+    lightboxVideo.load();
+    lightbox.classList.add("open");
+    document.body.classList.add("no-scroll");
+    lightboxVideo.play().catch(() => {});
+    lightboxClose.focus();
+  };
+
+  const closeLightbox = () => {
+    if (!lightbox || !lightboxVideo || !lightboxSource) return;
+    lightbox.classList.remove("open");
+    document.body.classList.remove("no-scroll");
+    lightboxVideo.pause();
+    lightboxSource.setAttribute("src", "");
+    lightboxVideo.removeAttribute("poster");
+    lightboxVideo.load();
+    if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
+  };
+
+  document.querySelectorAll(".work-media").forEach((media) => {
+    const video = media.querySelector(".work-video");
+    if (!video) return;
+    if (media.classList.contains("work-media--pending")) return;
+
+    const source = video.querySelector("source");
+    const src = source ? source.getAttribute("src") : null;
+    const poster = video.getAttribute("poster");
+
+    media.classList.add("is-expandable");
+    media.addEventListener("click", () => openLightbox(src, poster));
+  });
+
+  if (lightboxClose) lightboxClose.addEventListener("click", closeLightbox);
+  if (lightbox) {
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && lightbox && lightbox.classList.contains("open")) {
+      closeLightbox();
+    }
   });
 });

@@ -13,23 +13,13 @@ existing site's root (or a subfolder) and it works as-is.
 
 YOUR VIDEOS
 -----------
-- assets/sonara_tech.mp4 is already in place and wired up as the
-  first Work card ("Sonara — 360° Spatial Audio", tagged Tech), with a
-  poster frame at assets/sonara_tech-poster.jpg so it looks good
-  before anyone hovers it.
-- slake_beverage.mp4 didn't come through in the upload, so the second
-  card ("Slake", tagged Beverage) is set up to expect a file at
-  assets/slake_beverage.mp4 but currently shows a "Video pending" gradient
-  placeholder instead. Once you send that file:
-    1. Drop it in as assets/slake_beverage.mp4 (or edit the <source src="...">
-       path in index.html to match your filename).
-    2. In index.html, find the comment "Real sample 2: Slake" and remove the
-       <div class="placeholder-gradient ...">, the
-       <span class="pending-label">Video pending</span>, and the
-       " work-media--pending" class on the surrounding <div class="work-media">
-       — that reveals the real video exactly like the Sonara card.
-    3. Optional: generate a poster image the same way (see below) and add a
-       poster="..." attribute to the <video> tag.
+- assets/sonara_tech.mp4 is wired up as the first Work card
+  ("Sonara — 360° Spatial Audio", tagged Tech), with a poster frame at
+  assets/sonara_tech-poster.jpg so it looks good before anyone hovers it.
+- assets/slake_beverage.mp4 is wired up as the second Work card ("Slake",
+  tagged Beverage). It doesn't have a poster frame yet — see below for how
+  to add one — so until the video loads, visitors briefly see a plain dark
+  tile instead of a thumbnail.
 - On desktop, hovering a card autoplays a small muted preview inline.
   Clicking a card (on any device — desktop, tablet, or mobile) opens it
   fullscreen in a lightbox with normal video controls, so visitors can

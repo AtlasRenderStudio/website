@@ -153,4 +153,54 @@ document.addEventListener("DOMContentLoaded", () => {
       closeLightbox();
     }
   });
+
+  /* ---- FAQ accordion ---- */
+  document.querySelectorAll(".faq-item").forEach((item) => {
+    const question = item.querySelector(".faq-question");
+    if (!question) return;
+    question.addEventListener("click", () => {
+      const isOpen = item.classList.contains("open");
+
+      // Close any other open FAQ item (one open at a time)
+      document.querySelectorAll(".faq-item.open").forEach((openItem) => {
+        if (openItem !== item) {
+          openItem.classList.remove("open");
+          openItem.querySelector(".faq-question").setAttribute("aria-expanded", "false");
+        }
+      });
+
+      item.classList.toggle("open", !isOpen);
+      question.setAttribute("aria-expanded", String(!isOpen));
+    });
+  });
+
+  /* ---- contact form: opens a pre-filled email (no backend needed) ---- */
+  const contactForm = document.getElementById("contactForm");
+  if (contactForm) {
+    contactForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const business = contactForm.business.value.trim();
+      const website = contactForm.website.value.trim();
+      const product = contactForm.product.value.trim();
+      const email = contactForm.email.value.trim();
+      const adType = contactForm.adType.value;
+
+      const subject = `New ad inquiry from ${business || "a new client"}`;
+      const bodyLines = [
+        `Business / brand name: ${business}`,
+        `Website: ${website || "N/A"}`,
+        `Product: ${product}`,
+        `Email: ${email}`,
+        `Type of advertisement wanted: ${adType}`,
+      ];
+      const body = bodyLines.join("\n");
+
+      const mailto = `mailto:ahmadrashid2026@outlook.com?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
+
+      window.location.href = mailto;
+    });
+  }
 });
